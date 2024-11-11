@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hw-pod
+  namespace: homework
+spec:
+  containers:
+  - name: static-server
+    image: kali7va/static-server
+    env:
+    - name: SERVER_PORT
+      value: "8000"
+    - name: STATIC_RESOURCES
+      value: "/homework"
+    ports:
+    - containerPort: 8000
+    volumeMounts:
+    - name: workdir
+      mountPath: /homework
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/bash", "rm", "/homework/index.html"]
+  initContainers:
+  - name: busybox
+    image: busybox:1.28
+    command:
+    - wget
+    - -O
+    - /init/index.html
+    - http://info.cern.ch
+    volumeMounts:
+    - name: workdir
+      mountPath: /init
+  volumes:
+  - name: workdir
+    emptyDir: {}
