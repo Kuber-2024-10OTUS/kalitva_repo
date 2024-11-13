@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw-deployment
+  namespace: homework
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: static-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: static-server
+    spec:
+      containers:
+      - name: static-server
+        image: kali7va/static-server
+        env:
+        - name: SERVER_PORT
+          value: "8000"
+        - name: STATIC_RESOURCES
+          value: "/homework"
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          exec:
+            command: ["test", "-f", "/homework/index.html"]
+        volumeMounts:
+        - name: workdir
+          mountPath: /homework
+        lifecycle:
+          preStop:
+            exec:
+              command: ["rm", "/homework/index.html"]
+      initContainers:
+      - name: busybox
+        image: busybox:1.28
+        command: ["wget", "-O", "/init/index.html", "http://info.cern.ch"]
+        volumeMounts:
+        - name: workdir
+          mountPath: /init
+      volumes:
+      - name: workdir
+        emptyDir: {}
+      nodeSelector:
+        homework: 'true'
