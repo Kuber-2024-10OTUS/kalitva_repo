@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hw-cm
+  namespace: homework
+data:
+  file: |
+    allowed: "true"
+    enemies: aliens
+    lives: "3"
