@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hw-ingress
+  namespace: homework
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: homework.otus
+    http:
+      paths:
+      - path: /metrics.html
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: hw-service
+            port:
+              number: 80
+      - path: /index.html
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: hw-service
+            port:
+              number: 80
