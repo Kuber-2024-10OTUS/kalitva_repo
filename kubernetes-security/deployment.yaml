@@ -44,7 +44,7 @@ spec:
       initContainers:
       - name: init
         image: busybox:1.28
-        command: ["wget", "-O", "/init/index.html", "http://info.cern.ch"]
+        command: ["wget", "-O", "/init/index.html", "http://example.com"]
         volumeMounts:
         - name: workdir
           mountPath: /init
@@ -55,7 +55,6 @@ spec:
           - |
             SA=/var/run/secrets/kubernetes.io/serviceaccount
             TOKEN=$(cat ${SA}/token)
-            NAMESPACE=$(cat ${SA}/namespace)
             CACERT=${SA}/ca.crt
             KUBEAPI=https://kubernetes.default.svc
             curl --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${KUBEAPI}/metrics -o /init/metrics.html
