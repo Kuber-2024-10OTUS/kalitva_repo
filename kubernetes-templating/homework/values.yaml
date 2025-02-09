@@ -1,0 +1,29 @@
+# Default values for homework.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 3
+maxSurge: 2
+maxUnavailable: 1
+image: kali7va/static-server
+tag: latest
+serverPort: 8000
+
+image:
+  repository: kali7va/static-server
+  tag: "latest"
+
+readinessProbe:
+  enabled: true
+  path: /index.html
+  port: 8000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+servicePort: 80
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  host: homework.otus
+  paths:
+  - path: /index.html
+    pathType: ImplementationSpecific
