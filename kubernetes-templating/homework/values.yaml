@@ -27,3 +27,7 @@ ingress:
   paths:
   - path: /index.html
     pathType: ImplementationSpecific
+
+kafka:
+  controller:
+    replicaCount: 1

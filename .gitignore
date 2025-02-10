@@ -1,2 +1,4 @@
 *.swp
+*.tgz
 static-server/
+Chart.lock
