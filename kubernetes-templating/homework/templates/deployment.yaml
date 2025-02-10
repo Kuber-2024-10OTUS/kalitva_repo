@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  namespace: {{ .Release.Namespace | default "default" }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "homework.fullname" . }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.maxSurge }}
+      maxUnavailable: {{ .Values.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "homework.fullname" . }}
+    spec:
+      containers:
+      - name: {{ include "homework.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        env:
+        - name: SERVER_PORT
+          value: {{ .Values.serverPort | quote }}
+        - name: STATIC_RESOURCES
+          value: "/homework"
+        ports:
+        - containerPort: {{ .Values.serverPort }}
+        {{ if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.readinessProbe.path }}
+            port: {{ .Values.readinessProbe.port }}
+        {{ end }}
+        volumeMounts:
+        - name: workdir
+          mountPath: /homework
+        lifecycle:
+          preStop:
+            exec:
+              command: ["rm", "/homework/index.html"]
+      initContainers:
+      - name: init
+        image: busybox:1.28
+        command: ["wget", "-O", "/init/index.html", "http://example.com"]
+        volumeMounts:
+        - name: workdir
+          mountPath: /init
+        volumeMounts:
+        - name: workdir
+          mountPath: /init
+      volumes:
+      - name: workdir
+        emptyDir: {}

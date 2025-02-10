@@ -1,0 +1,4 @@
+The application URLs:
+{{- range .Values.ingress.paths }}
+  - http://{{ $.Values.ingress.host }}{{ .path }}
+{{- end }}
